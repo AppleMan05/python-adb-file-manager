@@ -1,5 +1,5 @@
 from ppadb.client import Client as AdbClient
-import subprocess
+from pathlib import Path
 client = AdbClient(host="127.0.0.1", port=5037)
 devices = client.devices()
 
@@ -10,9 +10,16 @@ def change_directory(cwd, directory):
     global current_dir
     current_dir = f'{cwd}/{directory}'
 
-def pull_a_file(cwd, file):
-    device.pull(f"{cwd}/{file}", f"{file}")
-    print(f"The file is successfully pulled and stored as {file}")
+def pull_a_file(file):
+    file2 = file.split("/")[-1]
+    device.pull(f"{file}", f"{file2}")
+    print(f"The file is successfully pulled and stored as {file2}")
+
+def push_a_file(file):
+    file2 = file.split("/")[-1]
+    device.shell("mkdir -p /sdcard/ADBfilemanager/")
+    device.push(f'{file}', f'/sdcard/ADBfilemanager/{file2}')
+    print(f'The file is pushed successfully and stored as {file}')
 
 for device in devices:
 
@@ -36,4 +43,13 @@ for device in devices:
             file_index = int(input("\nPlease enter the index of the file you wish to pull: "))
             file_to_pull = files[file_index].strip()
             print(file_to_pull)
-            #pull_a_file(current_dir, file_to_pull)
+            pull_a_file(file_to_pull)
+
+        elif choice == 3:
+            file_path = input("Please enter the full path of the file you wish to push: ")
+            try:
+                with open(file_path, "r") as f:
+                    push_a_file(f)
+                    f.close()
+            except FileNotFoundError():
+                print("File not accessible")
