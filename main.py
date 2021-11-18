@@ -1,5 +1,5 @@
 from ppadb.client import Client as AdbClient
-from pathlib import Path
+import os
 client = AdbClient(host="127.0.0.1", port=5037)
 devices = client.devices()
 
@@ -16,10 +16,11 @@ def pull_a_file(file):
     print(f"The file is successfully pulled and stored as {file2}")
 
 def push_a_file(file):
-    file2 = file.split("/")[-1]
+    print(file)
+    file2 = file.split("\\")[-1]
     device.shell("mkdir -p /sdcard/ADBfilemanager/")
     device.push(f'{file}', f'/sdcard/ADBfilemanager/{file2}')
-    print(f'The file is pushed successfully and stored as {file}')
+    print(f'The file is pushed successfully and stored as {file2}')
 
 for device in devices:
 
@@ -47,9 +48,9 @@ for device in devices:
 
         elif choice == 3:
             file_path = input("Please enter the full path of the file you wish to push: ")
-            try:
-                with open(file_path, "r") as f:
-                    push_a_file(f)
-                    f.close()
-            except FileNotFoundError():
-                print("File not accessible")
+            file_path = os.path.abspath(file_path)
+            print(file_path)
+            file_exists = os.path.isfile(file_path)
+            print(file_exists)
+                
+            
