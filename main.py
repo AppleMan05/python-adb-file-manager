@@ -52,5 +52,7 @@ for device in devices:
             print(file_path)
             file_exists = os.path.isfile(file_path)
             print(file_exists)
+            if file_exists == True:
+                push_a_file(file_path)
                 
             
